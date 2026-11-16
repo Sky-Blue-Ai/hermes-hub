@@ -12,7 +12,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const agent = agents.find((a) => a.id === id);
-  return { title: agent ? `${agent.name} · Hermes Hub` : "Agent · Hermes Hub" };
+  return { title: agent ? `${agent.name} · Hermes Hub` : "角色 · Hermes Hub" };
 }
 
 export default async function AgentPage({ params }: { params: Promise<{ id: string }> }) {
@@ -28,7 +28,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
     <>
       <nav className="crumbs">
         <Link href={href("/agents/")}>
-          <IconBack size={12} /> Agent
+          <IconBack size={12} /> 角色
         </Link>
         <span>/</span>
         <span style={{ color: "var(--ink-2)" }}>{agent.name}</span>
@@ -118,7 +118,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
       )}
 
       <p className="section-note" style={{ marginTop: 26 }}>
-        Agent 是展示层的人为分组，写在 content/agents.json 里；技能与会话数据都来自本机采集，没有虚构。
+        「角色」是展示层的人为分组（content/agents.json），Hermes 本身只有一个 default 实例；技能、定时任务、会话数据都来自本机采集。
       </p>
     </>
   );

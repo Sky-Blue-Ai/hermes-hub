@@ -34,10 +34,10 @@ export default function OverviewPage() {
         </div>
         <div className="stat">
           <div className="stat-label">
-            <IconAgent size={13} /> Agent
+            <IconAgent size={13} /> 角色
           </div>
           <div className="stat-value">{stats.agents}</div>
-          <div className="stat-foot">按角色组合技能</div>
+          <div className="stat-foot">1 个 Hermes 实例的 {stats.agents} 种分工</div>
         </div>
         <div className="stat">
           <div className="stat-label">
@@ -64,7 +64,7 @@ export default function OverviewPage() {
       </section>
 
       <div className="section-head">
-        <h2 className="section-title">Agent 名册</h2>
+        <h2 className="section-title">角色分工</h2>
         <span className="section-note">同一个 Hermes，不同角色</span>
         <Link className="more" href={href("/agents/")}>
           全部 <IconArrow size={12} />

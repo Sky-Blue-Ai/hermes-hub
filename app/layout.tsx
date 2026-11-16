@@ -5,7 +5,7 @@ import { data } from "@/lib/content";
 import { BASE } from "@/lib/paths";
 
 export const metadata: Metadata = {
-  title: "Hermes Hub · 我的 Agent 与技能",
+  title: "Hermes Hub · 本机 Hermes 控制台",
   description:
     "本机 Hermes 的只读控制台：技能库、Agent 名册、定时任务、会话用量与通道状态。",
   icons: {

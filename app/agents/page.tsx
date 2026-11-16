@@ -4,15 +4,18 @@ import { href } from "@/lib/paths";
 import { agentStyle } from "@/lib/style";
 import { SkillGlyph } from "@/components/icons";
 
+export const metadata = { title: "角色 · Hermes Hub" };
+
 export default function AgentsPage() {
   return (
     <>
       <header className="page-head">
         <div>
-          <h1 className="page-title">Agent</h1>
+          <h1 className="page-title">角色</h1>
           <p className="page-sub">
-            一个 Hermes 实例，几副面孔。每个 Agent 是「一组技能 + 若干定时任务 + 一个通道/项目」的组合，
-            点进去能看到它到底会什么、什么时候自己动手。
+            本机只有 <strong>1 个 Hermes 实例</strong>（<code>default</code> profile），这里是它的 {agents.length} 种分工：
+            每种分工 = 一组技能 + 若干定时任务 + 一个通道/项目。分组写在 <code>content/agents.json</code>，
+            技能、定时任务、会话都是真实采集的。
           </p>
         </div>
       </header>
@@ -60,7 +63,7 @@ export default function AgentsPage() {
 
       <div className="section-head">
         <h2 className="section-title">技能全部落地在这里</h2>
-        <span className="section-note">Agent 只是视图，能力都在技能里</span>
+        <span className="section-note">角色只是视图，能力都在技能里</span>
       </div>
       <div className="panel panel-pad" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {skills.slice(0, 24).map((s) => (

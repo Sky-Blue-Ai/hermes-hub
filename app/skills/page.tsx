@@ -24,7 +24,7 @@ export default function SkillsPage() {
         <div>
           <h1 className="page-title">技能</h1>
           <p className="page-sub">
-            为本机 Hermes 装载的能力。每个技能是一个 SKILL.md，Agent 执行任务时按需调用；
+            为本机 Hermes 装载的能力。每个技能是一个 SKILL.md，执行任务时按需调用；
             分类来自技能自带的 metadata，不是人工编的。
           </p>
         </div>

@@ -33,7 +33,7 @@ export default function Sidebar({
 
   const items: NavItem[] = [
     { path: "/", label: "概览", icon: <IconGrid /> },
-    { path: "/agents", label: "Agent", icon: <IconAgent />, badge: counts.agents },
+    { path: "/agents", label: "角色", icon: <IconAgent />, badge: counts.agents },
     { path: "/skills", label: "技能", icon: <IconSpark />, badge: counts.skills },
     { path: "/cron", label: "定时任务", icon: <IconClock />, badge: counts.cron },
     { path: "/usage", label: "用量", icon: <IconChart /> },

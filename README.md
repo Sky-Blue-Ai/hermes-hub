@@ -23,10 +23,30 @@ npm install
 npm run collect     # 采集 -> app/data/hermes.json
 npm run check       # 门禁
 npm run build       # 静态导出 -> out/
-./scripts/serve-web.sh start   # http://127.0.0.1:8090/
+./scripts/serve-web.sh start   # 只读版 http://127.0.0.1:8090/
+./scripts/serve-web.sh api     # 可写版 http://127.0.0.1:8091/（静态 + /api/*）
 ```
 
 `npm run build` 会通过 `prebuild` 自动跑 collect + check。
+
+## 写操作（可选，默认不开）
+
+`tools/api.py` 只监听 `127.0.0.1:8091`，提供：
+
+| 接口 | 作用 |
+|---|---|
+| `GET /api/health` | 前端用来判断「是否有写能力」，没有就不渲染按钮 |
+| `POST /api/cron/pause` `{id}` | `hermes cron pause <id>` |
+| `POST /api/cron/resume` `{id}` | `hermes cron resume <id>` |
+| `POST /api/cron/run` `{id}` | `hermes cron run <id>` |
+| `POST /api/refresh` | 重新采集 + 构建（约 40s） |
+
+安全四道门：① 只绑 loopback；② 带 `X-Forwarded-For` 一律拒（隧道反代打不进来）；
+③ `Origin` 必须是 `127.0.0.1:8091` / `localhost:8091`（挡跨站 CSRF），或带 `.run/api_token` 的
+`X-Hermes-Token`（脚本用）；④ 任务 id 必须匹配 `^[A-Za-z0-9_-]{4,64}$`。每次写操作落在 `.run/audit.jsonl`。
+
+隧道只指向 8090（只读版）：手机上能看不能改。要远程操作就把隧道指到 8091 并自己加一层鉴权——
+脚本默认不做这件事，因为把能改 cron 的接口暴露到公网风险太高。
 
 ## 门禁（tools/check_content.py）
 
@@ -47,11 +67,13 @@ components/            侧边栏、技能浏览器（客户端筛选）、图标
 scripts/serve-web.sh   8090 静态服务 + tunnel
 ```
 
-## 二期（未做）
+## 二期（已做一半）
 
-- 「+ 安装技能」真装：需要一个只监听 127.0.0.1 的写 API（`hermes skills install`）+ 审计日志
-- 启停定时任务：同上，走 `hermes cron enable/disable`
-- 远端 SkillHub 搜索：`hermes skills browse` 在本机实测 180s 超时，必须带超时与缓存
+- ✅ 暂停/恢复/立即运行定时任务：`tools/api.py` + 定时任务页按钮（仅本机 8091 可见）
+- ✅ 刷新快照并重建：定时任务页右上按钮
+- ⬜ 「+ 安装技能」真装：需要 `hermes skills install <id>`，远端 registry 搜索在本机实测会超时，
+  要先做超时 + 缓存再上
+- ⬜ GitHub Pages 固定地址：仓库建好后配 `.github/workflows/pages.yml`（产物里的写按钮会自动消失）
 
 ## 部署到子路径
 

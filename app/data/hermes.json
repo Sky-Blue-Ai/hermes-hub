@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-16T18:08:30+08:00",
+ "generatedAt": "2026-11-16T18:25:50+08:00",
  "stats": {
   "skills": 69,
   "localSkills": 24,
@@ -8,10 +8,10 @@
   "cron": 5,
   "cronEnabled": 2,
   "sessions": 119,
-  "messages": 11691,
-  "tokensIn": 11983012,
-  "tokensOut": 3920311,
-  "toolCalls": 5931,
+  "messages": 11757,
+  "tokensIn": 12011539,
+  "tokensOut": 3937930,
+  "toolCalls": 5962,
   "costUsd": 3.3874,
   "projects": 5,
   "skillChars": 698948
@@ -1850,7 +1850,7 @@
    "name": "hermes-hub",
    "branch": "main",
    "lastCommit": "2026-11-16",
-   "subject": "feat: Hermes Hub 首版（技能库/Agent/定时任务/用量/通道，静态导出）",
+   "subject": "fix: 内置/本地统计走文件系统；门禁扫描技能正文；移动端隐藏导航滚动条",
    "desc": "把本机 Hermes 的技能、Agent、定时任务、会话用量读成一份**只读**的中文控制台（LightVela 式布局）。"
   },
   {
@@ -1882,9 +1882,9 @@
   {
    "title": "参考 LightVela 规划 Hermes Agent 展示应用",
    "platform": "feishu",
-   "messages": 216,
+   "messages": 282,
    "cost": 0,
-   "when": "2026-11-16T10:08:06.587106+00:00"
+   "when": "2026-11-16T10:25:33.162381+00:00"
   },
   {
    "title": "东野圭吾小说资料建站发布",
@@ -1966,10 +1966,10 @@
  ],
  "usage": {
   "sessions": 119,
-  "messages": 11691,
-  "tokensIn": 11983012,
-  "tokensOut": 3920311,
-  "toolCalls": 5931,
+  "messages": 11757,
+  "tokensIn": 12011539,
+  "tokensOut": 3937930,
+  "toolCalls": 5962,
   "costUsd": 3.3874,
   "models": [
    {
@@ -2041,7 +2041,7 @@
    {
     "date": "2026-11-16",
     "sessions": 1,
-    "messages": 216,
+    "messages": 282,
     "cost": 0
    }
   ],
@@ -2105,6 +2105,13 @@
     "when": "2026-11-14T14:34:26.891221+00:00"
    },
    {
+    "title": "参考 LightVela 规划 Hermes Agent 展示应用",
+    "platform": "feishu",
+    "messages": 282,
+    "cost": 0,
+    "when": "2026-11-16T10:25:33.162381+00:00"
+   },
+   {
     "title": "询问是否认识用户",
     "platform": "qqbot",
     "messages": 237,
@@ -2124,13 +2131,6 @@
     "messages": 227,
     "cost": 0,
     "when": "2026-11-14T15:05:26.818007+00:00"
-   },
-   {
-    "title": "Subagent: 写 6 条东汉与隋代事件数据到 /tmp/batch_hist_P2.json，来源均需…",
-    "platform": "subagent",
-    "messages": 225,
-    "cost": 0.067,
-    "when": "2026-11-12T17:01:57.719296+00:00"
    }
   ],
   "topTools": []

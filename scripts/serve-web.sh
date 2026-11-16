@@ -46,6 +46,29 @@ case "${1:-start}" in
     code=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || true)
     echo "已启动：$URL（HTTP $code，日志 $LOG）"
     ;;
+  api)
+    # 本机写操作版：静态 + /api/*（暂停/恢复/立即运行定时任务、刷新快照）
+    ensure_build
+    API_PORT="${API_PORT:-8091}"
+    APIPID="$RUN/api.pid"
+    if [ -f "$APIPID" ] && kill -0 "$(cat "$APIPID")" 2>/dev/null; then
+      echo "API 已在运行（pid $(cat "$APIPID")）：http://127.0.0.1:${API_PORT}/"
+      exit 4
+    fi
+    nohup python3.11 "$ROOT/tools/api.py" >"$RUN/api.log" 2>&1 &
+    echo $! >"$APIPID"
+    sleep 1
+    echo "已启动：http://127.0.0.1:${API_PORT}/（写操作 token 在 $RUN/api_token，日志 $RUN/api.log）"
+    echo "health: $(curl -s -m 3 http://127.0.0.1:${API_PORT}/api/health || echo '失败')"
+    ;;
+  api-stop)
+    APIPID="$RUN/api.pid"
+    if [ -f "$APIPID" ] && kill -0 "$(cat "$APIPID")" 2>/dev/null; then
+      kill "$(cat "$APIPID")" && rm -f "$APIPID" && echo "API 已停止"
+    else
+      echo "API 没有在运行"
+    fi
+    ;;
   stop)
     if is_running; then
       kill "$(cat "$PIDFILE")" && rm -f "$PIDFILE"
@@ -75,7 +98,7 @@ case "${1:-start}" in
       -o ServerAliveInterval=20 -R 80:localhost:"$PORT" serveo.net
     ;;
   *)
-    echo "用法：$0 {start|stop|restart|status|logs|tunnel}"
+    echo "用法：$0 {start|stop|restart|status|logs|tunnel|api|api-stop}"
     exit 1
     ;;
 esac

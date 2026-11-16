@@ -1,11 +1,26 @@
 import { crons, agents } from "@/lib/content";
-import { href } from "@/lib/paths";
-import Link from "next/link";
+import CronList from "@/components/CronList";
+import type { CronRow } from "@/components/CronList";
 
 export const metadata = { title: "定时任务 · Hermes Hub" };
 
 export default function CronPage() {
   const enabled = crons.filter((c) => c.enabled).length;
+
+  const rows: CronRow[] = crons.map((c) => {
+    const owner = agents.find((a) => a.crons.includes(c.id));
+    return {
+      id: c.id,
+      name: c.name,
+      kind: c.kind,
+      expr: c.expr,
+      display: c.display,
+      enabled: c.enabled,
+      summary: c.summary,
+      promptChars: c.promptChars,
+      owner: owner ? { id: owner.id, name: owner.name } : undefined,
+    };
+  });
 
   return (
     <>
@@ -14,41 +29,12 @@ export default function CronPage() {
           <h1 className="page-title">定时任务</h1>
           <p className="page-sub">
             Hermes 自己会醒来的时刻：{enabled} 个启用 / 共 {crons.length} 个。
-            这里是只读视图，启停与编辑走 <code>hermes cron</code>。
+            在本机打开时可以暂停、恢复或立即运行；GitHub Pages 上只读。
           </p>
         </div>
       </header>
 
-      <div className="panel">
-        {crons.map((c) => {
-          const owner = agents.find((a) => a.crons.includes(c.id));
-          return (
-            <div className="row" key={c.id} style={{ alignItems: "flex-start" }}>
-              <div className="row-main">
-                <div className="row-title">
-                  {c.name}
-                  <span className={`status-tag ${c.enabled ? "on" : "off"}`} style={{ marginLeft: 8 }}>
-                    {c.enabled ? "启用中" : "已暂停"}
-                  </span>
-                </div>
-                <div className="row-sub" style={{ whiteSpace: "normal" }}>
-                  {c.summary || "—"}
-                </div>
-                <div className="skill-meta" style={{ marginTop: 8 }}>
-                  <span className="pill">{c.kind === "cron" ? "cron" : `${c.kind}`}</span>
-                  <span className="pill">{c.display}</span>
-                  <span className="pill">提示词 {c.promptChars} 字符</span>
-                  {owner && (
-                    <Link href={href(`/agents/${owner.id}/`)} className="pill accent">
-                      {owner.name}
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <CronList rows={rows} />
 
       <div className="section-head">
         <h2 className="section-title">怎么读这些配置</h2>

@@ -42,6 +42,8 @@ jobs:
       - name: Build (subpath = repo name)
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          # CI 上没有 ~/.hermes，也没有 hermes CLI：用仓库里提交的采集产物，只跑门禁
+          HERMES_HUB_SKIP_COLLECT: "1"
         run: npm run build
 
       - uses: actions/configure-pages@v5

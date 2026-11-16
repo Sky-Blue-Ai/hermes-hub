@@ -376,9 +376,16 @@ def load_recent() -> list[dict]:
 
 
 def load_channels() -> tuple[list[dict], dict]:
-    """`hermes status` 的 Platforms 行是唯一的真实来源（config.yaml 里全是注释示例）。"""
-    proc = subprocess.run(["hermes", "status"], capture_output=True, text=True, timeout=90)
-    out = proc.stdout + proc.stderr
+    """`hermes status` 的 Platforms 行是唯一的真实来源（config.yaml 里全是注释示例）。
+
+    没有 hermes CLI 的机器（CI）不炸：回落成全部未知。
+    """
+    out = ""
+    try:
+        proc = subprocess.run(["hermes", "status"], capture_output=True, text=True, timeout=90)
+        out = proc.stdout + proc.stderr
+    except FileNotFoundError:
+        print("[warn] 找不到 hermes CLI，通道/运行时留空")
     status: dict = {}
     for key in ("Model", "Provider", "Gateway", "Platforms", "Jobs"):
         m = re.search(rf"^\s*{key}:\s*(.+)$", out, re.M)

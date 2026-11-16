@@ -1,0 +1,48 @@
+{
+  "agents": [
+    {
+      "id": "feishu-assistant",
+      "name": "飞书助理",
+      "role": "IM 里随叫随到的私人助理",
+      "summary": "在飞书私聊和话题里接活：读文档、建多维表格、查日程、记待办，每晚 8 点主动提醒第二天到期的事。",
+      "color": "violet",
+      "skills": ["feishu-operations", "feishu-todo", "himalaya", "google-workspace"],
+      "crons": ["7932349cccf7"],
+      "channel": "feishu",
+      "project": ""
+    },
+    {
+      "id": "history-editor",
+      "name": "历史站主编",
+      "role": "中外双轨历史内容的生产线",
+      "summary": "按六阶段框架补条目、查证来源、过门禁、推构建，把 history-river 从骨架填成能读的站。",
+      "color": "amber",
+      "skills": ["history-river-content-loop", "grounded-citations", "batch-data-enrichment", "static-site-delivery"],
+      "crons": ["41c4a163e376", "ea8e2bae9a66", "b2155216599d"],
+      "channel": "",
+      "project": "history-river"
+    },
+    {
+      "id": "album-engineer",
+      "name": "相册平台工程",
+      "role": "从需求到上线的全栈开发",
+      "summary": "接需求先出方案、审批后动手，改完立刻 commit + push；负责 personal-album-platform 的前后端与数据库。",
+      "color": "blue",
+      "skills": ["code-change-delivery", "product-build-playbook", "nextjs-static-frontend", "systematic-debugging", "test-driven-development"],
+      "crons": [],
+      "channel": "",
+      "project": "personal-album-platform"
+    },
+    {
+      "id": "content-studio",
+      "name": "内容工作室",
+      "role": "研究、写作与视觉产出",
+      "summary": "查论文、核实来源、写长文、出信息图与动画视频，每周日晚做一次内容复盘。",
+      "color": "green",
+      "skills": ["arxiv", "grounded-citations", "baoyu-infographic", "humanizer", "manim-video", "obsidian"],
+      "crons": ["fb197f6ecd41"],
+      "channel": "",
+      "project": ""
+    }
+  ]
+}

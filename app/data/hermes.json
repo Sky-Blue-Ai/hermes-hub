@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-16T18:04:06+08:00",
+ "generatedAt": "2026-11-16T18:08:30+08:00",
  "stats": {
   "skills": 69,
   "localSkills": 24,
@@ -8,10 +8,10 @@
   "cron": 5,
   "cronEnabled": 2,
   "sessions": 119,
-  "messages": 11661,
-  "tokensIn": 11972121,
-  "tokensOut": 3914366,
-  "toolCalls": 5914,
+  "messages": 11691,
+  "tokensIn": 11983012,
+  "tokensOut": 3920311,
+  "toolCalls": 5931,
   "costUsd": 3.3874,
   "projects": 5,
   "skillChars": 698948
@@ -1846,6 +1846,14 @@
    "desc": "放一次性 / 小型静态站点的仓库，每个站点一个子目录，推上来就能通过 GitHub Pages 访问。"
   },
   {
+   "id": "hermes-hub",
+   "name": "hermes-hub",
+   "branch": "main",
+   "lastCommit": "2026-11-16",
+   "subject": "feat: Hermes Hub 首版（技能库/Agent/定时任务/用量/通道，静态导出）",
+   "desc": "把本机 Hermes 的技能、Agent、定时任务、会话用量读成一份**只读**的中文控制台（LightVela 式布局）。"
+  },
+  {
    "id": "history-river",
    "name": "history-river",
    "branch": "main",
@@ -1868,23 +1876,15 @@
    "lastCommit": "2026-11-08",
    "subject": "feat(web): 顶部导航 tab 化 + 返回上一页按钮",
    "desc": "古代艺术名人画展 —— Web + iOS + Android 三端。web 与客户端各一套 UI，客户端为 KMP + CMP。"
-  },
-  {
-   "id": "hermes-hub",
-   "name": "hermes-hub",
-   "branch": "HEAD",
-   "lastCommit": "",
-   "subject": "",
-   "desc": "把本机 Hermes 的技能、Agent、定时任务、会话用量读成一份**只读**的中文控制台（LightVela 式布局）。"
   }
  ],
  "recent": [
   {
    "title": "参考 LightVela 规划 Hermes Agent 展示应用",
    "platform": "feishu",
-   "messages": 186,
+   "messages": 216,
    "cost": 0,
-   "when": "2026-11-16T10:03:54.592726+00:00"
+   "when": "2026-11-16T10:08:06.587106+00:00"
   },
   {
    "title": "东野圭吾小说资料建站发布",
@@ -1966,10 +1966,10 @@
  ],
  "usage": {
   "sessions": 119,
-  "messages": 11661,
-  "tokensIn": 11972121,
-  "tokensOut": 3914366,
-  "toolCalls": 5914,
+  "messages": 11691,
+  "tokensIn": 11983012,
+  "tokensOut": 3920311,
+  "toolCalls": 5931,
   "costUsd": 3.3874,
   "models": [
    {
@@ -2041,7 +2041,7 @@
    {
     "date": "2026-11-16",
     "sessions": 1,
-    "messages": 186,
+    "messages": 216,
     "cost": 0
    }
   ],

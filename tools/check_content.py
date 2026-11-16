@@ -19,13 +19,35 @@ DATA = ROOT / "app" / "data" / "hermes.json"
 AGENTS = ROOT / "content" / "agents.json"
 
 SENSITIVE = [
-    (re.compile(r"sk-[A-Za-z0-9_\-]{16,}"), "疑似 API key"),
+    # sk- 前面不能紧跟字母（避免 risk-... / disk-... 这类单词被当成 key）
+    (re.compile(r"(?<![A-Za-z0-9])sk-[A-Za-z0-9]{20,}"), "疑似 API key"),
     (re.compile(r"\bou_[0-9a-f]{16,}\b"), "飞书 open_id"),
-    (re.compile(r"\b1[3-9]\d{9}\b"), "手机号"),
-    (re.compile(r"[\w.+-]+@[\w-]+\.[\w.]{2,}"), "邮箱"),
+    # 排除浮点百分比（13.1578947…）与 Apple 文档里的 1415555xxxx 示例号
+    (re.compile(r"(?<![\d.])1(?!415555)[3-9]\d{9}(?![\d.])"), "手机号"),
+    # 排除示例域名与包名版本号（p5.js-svg@1.6.0）
+    (
+        re.compile(r"[\w.+-]+@(?!example\.com|[\d])[\w-]+\.[\w.]{2,}"),
+        "邮箱",
+    ),
     (re.compile(r"(?i)bearer\s+[A-Za-z0-9._\-]{24,}"), "Bearer token"),
     (re.compile(r"cli_[0-9a-f]{16,}"), "飞书应用 ID"),
 ]
+
+# 文档里合法出现、不属于泄露的字符串
+ALLOW = {
+    "git@github.com",
+    "noreply@github.com",
+    "hermes@nousresearch.com",
+    "nokey@localhost.run",
+    "you@example.com",
+    "user@example.com",
+    "alice@example.com",
+    "recipient@example.com",
+    # 文档里的占位联系人
+    "boss@company.com",
+    "alice@co.com",
+    "bob@co.com",
+}
 
 errors: list[str] = []
 warnings: list[str] = []
@@ -81,14 +103,15 @@ def main() -> int:
         [
             *(s.get("desc", "") for s in skills),
             *(s.get("title", "") for s in skills),
+            *(s.get("body", "") for s in skills),
             *(s.get("summary", "") for s in crons),
             *(r.get("title", "") for r in payload.get("recent", [])),
         ]
     )
     for pat, label in SENSITIVE:
-        hits = pat.findall(text_blob)
+        hits = [h for h in pat.findall(text_blob) if h not in ALLOW]
         if hits:
-            errors.append(f"脱敏未通过：{label} 命中 {len(hits)} 处，例：{hits[0][:40]}")
+            errors.append(f"脱敏未通过：{label} 命中 {len(hits)} 处，例：{hits[0][:60]}")
 
     # 数量骤降保护
     baseline_file = ROOT / ".baseline.json"

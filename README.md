@@ -75,23 +75,35 @@ scripts/serve-web.sh   8090 静态服务 + tunnel
   要先做超时 + 缓存再上
 - ⬜ GitHub Pages 固定地址：仓库建好后配 `.github/workflows/pages.yml`（产物里的写按钮会自动消失）
 
-## 固定地址（本机 nginx）
+## 固定地址（本机 nginx，推荐）
 
-https://jarvis.asia/hub/ ← 生产地址（HTTPS，证书 `/etc/letsencrypt/live/icxyule.fun` 已含 jarvis.asia）
+**http://hub.120.24.177.192.nip.io/** ← 长期可用，手机上直接开，不用隧道
 
 ```bash
-./scripts/deploy-jarvis.sh    # 采集 + 门禁 + 构建(basePath=/hub) + rsync 到 /var/www/hermes-hub + reload nginx
+./scripts/deploy.sh   # 构建(无 basePath) + cp 到 /var/www/hermes-hub + reload nginx + 自检
 ```
 
-- nginx 片段在 `/etc/nginx/conf.d/jarvis.conf`：`location = /hub`(301) + `location ^~ /hub/`(alias /var/www/hermes-hub/)
-- 本机访问自己的公网 IP 会被 hairpin 挡掉（curl 回 000），自检要用
-  `curl -k --resolve jarvis.asia:443:127.0.0.1 https://jarvis.asia/hub/`
-- 这个地址是只读的：写按钮只在 `127.0.0.1:8091` 出现（同源 `/api/health` 不存在就自动隐藏）
+- nginx 片段：`/etc/nginx/conf.d/hermes-hub.conf`（`server_name hub.120.24.177.192.nip.io` → `root /var/www/hermes-hub`）
+- nip.io 是泛解析（`<任意前缀>.<IP>.nip.io` 都指到该 IP），所以域名固定、不需要 DNS 操作、不依赖证书
+- 本机访问自己的公网 IP 会被 hairpin 挡掉（curl 回 000/301），自检要带 Host 头：
+  `curl -H 'Host: hub.120.24.177.192.nip.io' http://127.0.0.1/skills/`
+- 只读：写按钮只在同源的 `127.0.0.1:8091` 出现
+- 现在是 **HTTP**：因为这台机器上的证书 `jarvis.asia`、`icxyule.fun` 都已在 2026-08 过期，
+  `certbot --nginx` 续期报 `unauthorized / 403`（见 README 的「证书」一节）。证书修好后可以换 HTTPS。
 
 ## 隧道（备用，域名会不停轮换）
 
 `./scripts/serve-web.sh start` + `./scripts/tunnel...`：localhost.run 每次重连换域名、serveo 十几分钟过期，
 只用于临时预览。当前域名记在 `.run/tunnel_url.txt`。
+
+## 证书（本机现状，2026-11 记录）
+
+- `certbot certificates`：`jarvis.asia`、`icxyule.fun`（含 7 个 *.icxyule.fun 子域）**都已在 2026-08 过期**
+- `certbot certonly --nginx -d jarvis.asia -d www.jarvis.asia` 报
+  `unauthorized ... Invalid response ... 403`；`--dry-run` 也没跑通
+- 排查方向：80 端口的 `/.well-known/acme-challenge/` 由 `yule.conf` 的 default_server 抢先处理（`location / { return 301 }`），
+  certbot 写进去的 location 被 `^~` 或 server 选择绕开 → 换成 `--webroot -w /var/www/html` 并把该 location 提前，或临时停 nginx 用 `--standalone`
+- 所以站点暂时走 nip.io 的 **HTTP**；证书修好后 `deploy.sh` 里换成 https 域名即可
 
 ## 部署到子路径
 

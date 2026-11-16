@@ -75,9 +75,27 @@ scripts/serve-web.sh   8090 静态服务 + tunnel
   要先做超时 + 缓存再上
 - ⬜ GitHub Pages 固定地址：仓库建好后配 `.github/workflows/pages.yml`（产物里的写按钮会自动消失）
 
-## 固定地址（本机 nginx，推荐）
+## 固定地址
 
-**http://hub.120.24.177.192.nip.io/** ← 长期可用，手机上直接开，不用隧道
+| 地址 | 性质 | 说明 |
+|---|---|---|
+| **https://sky-blue-ai.github.io/hermes-hub/** | 长期、HTTPS、只读 | GitHub Pages，推 `main` 自动重建（Actions）。国内网络偶尔慢 |
+| **http://hub.120.24.177.192.nip.io/** | 长期、HTTP、只读 | 本机 nginx 直服，国内直连快；内容要 `./scripts/deploy.sh` 同步 |
+| http://127.0.0.1:8091/cron/ | 本机、可写 | 唯一能暂停/恢复定时任务的地方 |
+
+刷新数据的完整流程（本机）：
+
+```bash
+npm run collect && npm run check       # 采集 + 门禁
+git add -A && git commit -m "chore: 刷新快照" && git push   # Pages 自动重建
+./scripts/deploy.sh                    # 顺带同步 nip.io 那套
+```
+
+Pages 部署要点见 `.github/workflows/pages.yml`：`HERMES_HUB_SKIP_COLLECT=1`（CI 上没有 `~/.hermes`），
+但**必须把 `app/data/hermes.json` 提交进仓库**，否则 CI 构建出的是空站（门禁会拦住技能数=0）。
+仓库第一次要在 Settings → Pages 里把 Source 选成 **GitHub Actions**，之后不用再碰。
+
+## 本机 nginx（nip.io 那套）
 
 ```bash
 ./scripts/deploy.sh   # 构建(无 basePath) + cp 到 /var/www/hermes-hub + reload nginx + 自检

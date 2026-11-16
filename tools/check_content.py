@@ -75,6 +75,9 @@ def main() -> int:
         ids.add(sid)
         if not s.get("title"):
             errors.append(f"{sid}: 缺中文标题（overrides.json）")
+        elif s.get("title") == sid:
+            # 新装的技能如果没补中文名，卡片会直接显示英文 id —— 这里当错误拦下来
+            errors.append(f"{sid}: 没有中文标题，去 content/overrides.json 的 titles 里加一条")
         if not (s.get("desc") or "").strip():
             errors.append(f"{sid}: 缺 description")
         if len(s.get("body") or "") < 200:

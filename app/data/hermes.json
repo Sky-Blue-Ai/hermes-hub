@@ -1,20 +1,20 @@
 {
- "generatedAt": "2026-11-16T18:25:50+08:00",
+ "generatedAt": "2026-11-16T18:38:32+08:00",
  "stats": {
-  "skills": 69,
-  "localSkills": 24,
+  "skills": 70,
+  "localSkills": 25,
   "builtinSkills": 44,
   "agents": 4,
   "cron": 5,
   "cronEnabled": 2,
   "sessions": 119,
-  "messages": 11757,
-  "tokensIn": 12011539,
-  "tokensOut": 3937930,
-  "toolCalls": 5962,
+  "messages": 11848,
+  "tokensIn": 12041398,
+  "tokensOut": 3955019,
+  "toolCalls": 6005,
   "costUsd": 3.3874,
   "projects": 5,
-  "skillChars": 698948
+  "skillChars": 701716
  },
  "skills": [
   {
@@ -1165,6 +1165,30 @@
    "featured": false
   },
   {
+   "id": "hermes-state-console",
+   "name": "hermes-state-console",
+   "desc": "Use when 要把本机 Hermes 状态做成网页控制台。",
+   "descEn": "",
+   "category": "software-development",
+   "categoryLabel": "软件开发",
+   "tags": [
+    "hermes",
+    "dashboard",
+    "nextjs",
+    "static-export",
+    "write-api",
+    "cron"
+   ],
+   "origin": "local",
+   "path": ".hermes/skills/software-development/hermes-state-console/SKILL.md",
+   "body": "# 把本机 Hermes 状态做成网页控制台\n\n参考实现：`/root/work/hermes-hub`（Next 16 静态导出 + 采集器 + 门禁 + 本机写 API，69 技能/4 Agent/5 cron/119 会话）。\n\n## When to Use\n\n- 用户要「像 LightVela 那样」把技能、Agent、定时任务、会话用量做成中文门户\n- 需要一个只读快照站 + 可选写操作（启停 cron、刷新快照）\n- 先看 `hermes dashboard`（127.0.0.1:9119）：它已有 Skills/Cron/Channels 页且 API 要鉴权，做产品化门户时**另建站，不改上游**（改上游每次 `hermes update` 都冲突）。\n\n## 数据源与坑（都实测过）\n\n| 数据 | 正确取法 | 坑 |\n|---|---|---|\n| 技能 | 遍历 `~/.hermes/skills` + `~/.hermes/plugins/*/skills` | **bailian 家族是 symlink 到 `~/.bailian/skills`，`Path.rglob` 不进符号链接目录**，会静默少 12 个技能。要先 `iterdir()`，目录是 symlink 就直接取其 `SKILL.md` |\n| frontmatter | 自己写极简解析 | `description: >-` / `|` 块标量会被当成嵌套 dict，`fm['description']` 变 dict 直接炸；必须识别块标量并把后续缩进行并成字符串 |\n| 内置 vs 本地 | 文件系统判定：`~/.hermes/hermes-agent/skills` 里出现过的名字 = builtin | `hermes skills list` 的表格列宽随名字长度变化，按列切分得到的 source **每次跑都可能不同**（实测同一份数据两次给出 30/38 与 31/37） |\n| 定时任务 | `~/.hermes/cron/jobs.json`，`schedule.kind/expr/display`、`enabled` | 提示词里有 base token、表格 id，进页面之前必须脱敏，只留摘要 |\n| 会话用量 | `state.db` 只读连接 `file:...?mode=ro` | 时间列是 float epoch，`started_at > strftime('%s','now','-45 days')` 是 text 比较 → 永远 0 行，要 `cast(... as integer)`；表里没有 `platform` 列，平台列叫 `source` |\n| 通道/运行时 | `hermes status` 的 `Platforms:` / `Gateway:` / `Model:` 行 | `config.yaml` 里全是注释示例，用 `enabled:` 正则会把 telegram/discord 误判成在线；`hermes skills browse` 实测 180s 超时，远端 registry 不要放进构建 |\n\n## 页面结构\n\n对齐 LightVela：侧栏（概览/Agent/技能/定时任务/用量/通道）、技能页三标签（技能/技能包/已安装）+ 搜索 + 精选轮播 + 分类胶囊 + 双列卡片、技能详情渲染 SKILL.md。\nAgent 是**人为分组**（`content/agents.json`：技能组合 + cron id + 项目），门禁校验引用的 id 都存在——别把 Agent 说成 profile（本机通常只有一个 profile）。\n\n## 写操作的安全线\n\n`hermes cron pause/resume/run <id>` 是真实可用的写接口。做按钮时四道门缺一不可：\n\n1. 只绑 `127.0.0.1`；2. 带 `X-Forwarded-For` 一律拒（隧道反代不能打进来）；\n3. `Origin` 必须等于本服务地址（浏览器帮不了你带自定义 header，只靠 token 会让 UI 点不动；只靠 Origin 又挡不住脚本）→ 两者取「或」；\n4. id 白名单正则 + 每次写操作落 `audit.jsonl`。\n\n`hermes cron` 成功时 stdout 是 `Paused job: <name>`，但会附带 `source update could not be finished` 警告；**不要只用 returncode 判成功**，把输出标记一起看，否则页面报「操作失败」而任务其实已经改了。\n\n## 验证清单\n\n- `npm run build` 后数页面：技能数 + Agent 数 + 固定页\n- 搜索/分类/标签页真点：搜索要用**原生 value setter** 触发 React（`Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(i, '词')` + `input` 事件），直接改 `.value` 不会触发 onChange\n- 390px：`document.documentElement.scrollWidth - innerWidth === 0`；移动端顶栏是横向滚动时记得 `scrollbar-width:none`，否则出现一条灰条\n- 写操作端到端：点按钮 → 读 `~/.hermes/cron/jobs.json` 确认 `enabled` 翻转 → 再点回来还原（**测完必须还原用户真实状态**）\n- 门禁要扫**技能正文**：只扫摘要会漏，正文里 `risk-con…` 会被当成 `sk-` key、CSS 百分比被当成手机号、`p5.js-svg@1.6.0` 被当成邮箱，正则要收紧 + 显式 allowlist\n\n## 已知教训\n\n- `\"use client\"` 模块里的**普通函数**（不是组件）不能在 server component 里调用，会变成 client reference 报错；共享纯函数放 `lib/*.ts`。\n- 侧栏/页头用 `usePathname()` 判激活态时，详情路由要归到一级 tab（`/skills/x` 点亮「技能」），子路径部署前先剥 `BASE`。\n- 卡片 `+` 按钮在整卡是 `<a>` 时只能是 `<span>`，套 `<a>` 会生成非法 HTML。\n",
+   "chars": 2768,
+   "source": "local",
+   "status": "enabled",
+   "title": "Hermes 状态控制台",
+   "featured": false
+  },
+  {
    "id": "requesting-code-review",
    "name": "requesting-code-review",
    "desc": "Pre-commit review: security scan, quality gates, auto-fix.",
@@ -1550,13 +1574,13 @@
    "count": 12
   },
   {
-   "id": "创意设计",
-   "label": "创意设计",
-   "count": 10
-  },
-  {
    "id": "软件开发",
    "label": "软件开发",
+   "count": 11
+  },
+  {
+   "id": "创意设计",
+   "label": "创意设计",
    "count": 10
   },
   {
@@ -1850,7 +1874,7 @@
    "name": "hermes-hub",
    "branch": "main",
    "lastCommit": "2026-11-16",
-   "subject": "fix: 内置/本地统计走文件系统；门禁扫描技能正文；移动端隐藏导航滚动条",
+   "subject": "feat: 本机写操作 API（暂停/恢复/立即运行定时任务、刷新快照）+ 审计日志",
    "desc": "把本机 Hermes 的技能、Agent、定时任务、会话用量读成一份**只读**的中文控制台（LightVela 式布局）。"
   },
   {
@@ -1882,9 +1906,9 @@
   {
    "title": "参考 LightVela 规划 Hermes Agent 展示应用",
    "platform": "feishu",
-   "messages": 282,
+   "messages": 373,
    "cost": 0,
-   "when": "2026-11-16T10:25:33.162381+00:00"
+   "when": "2026-11-16T10:37:59.423180+00:00"
   },
   {
    "title": "东野圭吾小说资料建站发布",
@@ -1966,10 +1990,10 @@
  ],
  "usage": {
   "sessions": 119,
-  "messages": 11757,
-  "tokensIn": 12011539,
-  "tokensOut": 3937930,
-  "toolCalls": 5962,
+  "messages": 11848,
+  "tokensIn": 12041398,
+  "tokensOut": 3955019,
+  "toolCalls": 6005,
   "costUsd": 3.3874,
   "models": [
    {
@@ -2041,7 +2065,7 @@
    {
     "date": "2026-11-16",
     "sessions": 1,
-    "messages": 282,
+    "messages": 373,
     "cost": 0
    }
   ],
@@ -2107,9 +2131,9 @@
    {
     "title": "参考 LightVela 规划 Hermes Agent 展示应用",
     "platform": "feishu",
-    "messages": 282,
+    "messages": 373,
     "cost": 0,
-    "when": "2026-11-16T10:25:33.162381+00:00"
+    "when": "2026-11-16T10:37:59.423180+00:00"
    },
    {
     "title": "询问是否认识用户",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import { data } from "@/lib/content";
@@ -9,8 +9,20 @@ export const metadata: Metadata = {
   description:
     "本机 Hermes 的只读控制台：技能库、Agent 名册、定时任务、会话用量与通道状态。",
   icons: {
-    icon: [{ url: `${BASE}/icon.svg`, type: "image/svg+xml" }],
+    icon: [
+      { url: `${BASE}/icon.svg`, type: "image/svg+xml" },
+      { url: `${BASE}/icon-192.png`, sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: `${BASE}/apple-icon.png`, sizes: "180x180", type: "image/png" }],
+    shortcut: [`${BASE}/icon-192.png`],
   },
+  manifest: `${BASE}/site.webmanifest`,
+};
+
+export const viewport: Viewport = {
+  themeColor: "#6c4cf1",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

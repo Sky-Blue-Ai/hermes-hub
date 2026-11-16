@@ -75,6 +75,25 @@ scripts/serve-web.sh   8090 静态服务 + tunnel
   要先做超时 + 缓存再上
 - ⬜ GitHub Pages 固定地址：仓库建好后配 `.github/workflows/pages.yml`（产物里的写按钮会自动消失）
 
+## 固定地址（本机 nginx）
+
+https://jarvis.asia/hub/ ← 生产地址（HTTPS，证书 `/etc/letsencrypt/live/icxyule.fun` 已含 jarvis.asia）
+
+```bash
+./scripts/deploy-jarvis.sh    # 采集 + 门禁 + 构建(basePath=/hub) + rsync 到 /var/www/hermes-hub + reload nginx
+```
+
+- nginx 片段在 `/etc/nginx/conf.d/jarvis.conf`：`location = /hub`(301) + `location ^~ /hub/`(alias /var/www/hermes-hub/)
+- 本机访问自己的公网 IP 会被 hairpin 挡掉（curl 回 000），自检要用
+  `curl -k --resolve jarvis.asia:443:127.0.0.1 https://jarvis.asia/hub/`
+- 这个地址是只读的：写按钮只在 `127.0.0.1:8091` 出现（同源 `/api/health` 不存在就自动隐藏）
+
+## 隧道（备用，域名会不停轮换）
+
+`./scripts/serve-web.sh start` + `./scripts/tunnel...`：localhost.run 每次重连换域名、serveo 十几分钟过期，
+只用于临时预览。当前域名记在 `.run/tunnel_url.txt`。
+
 ## 部署到子路径
 
-`NEXT_PUBLIC_BASE_PATH=/hermes-hub npm run build`，内部链接全部走 `lib/paths.ts` 的 `href()`。
+`NEXT_PUBLIC_BASE_PATH=/hermes-hub npm run build`。注意 `lib/paths.ts` 里的 `href()` 对 `<Link>` 返回根路径——
+basePath 已经由 Next 自己加，再加一次会变成 `/repo/repo/`。`asset()` 才需要显式前缀。

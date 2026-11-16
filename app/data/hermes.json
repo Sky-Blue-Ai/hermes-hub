@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-16T18:38:32+08:00",
+ "generatedAt": "2026-11-16T19:10:13+08:00",
  "stats": {
   "skills": 70,
   "localSkills": 25,
@@ -8,10 +8,10 @@
   "cron": 5,
   "cronEnabled": 2,
   "sessions": 119,
-  "messages": 11848,
-  "tokensIn": 12041398,
-  "tokensOut": 3955019,
-  "toolCalls": 6005,
+  "messages": 11902,
+  "tokensIn": 12058783,
+  "tokensOut": 3963865,
+  "toolCalls": 6028,
   "costUsd": 3.3874,
   "projects": 5,
   "skillChars": 701716
@@ -1874,7 +1874,7 @@
    "name": "hermes-hub",
    "branch": "main",
    "lastCommit": "2026-11-16",
-   "subject": "feat: 本机写操作 API（暂停/恢复/立即运行定时任务、刷新快照）+ 审计日志",
+   "subject": "feat: PWA 图标与 manifest；修 basePath 双前缀；门禁强制中文标题；Pages workflow 就绪",
    "desc": "把本机 Hermes 的技能、Agent、定时任务、会话用量读成一份**只读**的中文控制台（LightVela 式布局）。"
   },
   {
@@ -1906,9 +1906,9 @@
   {
    "title": "参考 LightVela 规划 Hermes Agent 展示应用",
    "platform": "feishu",
-   "messages": 373,
+   "messages": 427,
    "cost": 0,
-   "when": "2026-11-16T10:37:59.423180+00:00"
+   "when": "2026-11-16T11:09:11.688522+00:00"
   },
   {
    "title": "东野圭吾小说资料建站发布",
@@ -1990,10 +1990,10 @@
  ],
  "usage": {
   "sessions": 119,
-  "messages": 11848,
-  "tokensIn": 12041398,
-  "tokensOut": 3955019,
-  "toolCalls": 6005,
+  "messages": 11902,
+  "tokensIn": 12058783,
+  "tokensOut": 3963865,
+  "toolCalls": 6028,
   "costUsd": 3.3874,
   "models": [
    {
@@ -2065,7 +2065,7 @@
    {
     "date": "2026-11-16",
     "sessions": 1,
-    "messages": 373,
+    "messages": 427,
     "cost": 0
    }
   ],
@@ -2131,9 +2131,9 @@
    {
     "title": "参考 LightVela 规划 Hermes Agent 展示应用",
     "platform": "feishu",
-    "messages": 373,
+    "messages": 427,
     "cost": 0,
-    "when": "2026-11-16T10:37:59.423180+00:00"
+    "when": "2026-11-16T11:09:11.688522+00:00"
    },
    {
     "title": "询问是否认识用户",
